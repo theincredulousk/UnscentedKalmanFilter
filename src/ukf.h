@@ -73,6 +73,10 @@ public:
     // Measurement noise covariance (lidar)
   MatrixXd R_lidar_;
 
+  int radar_samples_total;
+  int lidar_samples_total;
+  int radar_samples_over_NIS_high_percenticle;
+  int lidar_samples_over_NIS_high_percenticle;
 
   /**
    * Constructor

@@ -26,6 +26,29 @@ std::string hasData(std::string s) {
   return "";
 }
 
+long samples = 0;
+float avgRMSEx = 0.0;
+float avgRMSExy = 0.0;
+float avgRMSEvx = 0.0;
+float avgRMSEvy = 0.0;
+VectorXd maxRMSvalues = VectorXd(4);
+
+void SwapMax(VectorXd& currentMax, unsigned int index, float newValue)
+{
+  if(currentMax(index) < newValue)
+  {
+    currentMax(index) = newValue;
+  }
+}
+
+void IsNewMax(VectorXd& currentMax, float x, float y, float vx, float vy)
+{
+  SwapMax(currentMax, 0, x);
+  SwapMax(currentMax, 1, y);
+  SwapMax(currentMax, 2, vx);
+  SwapMax(currentMax, 3, vy);
+}
+
 int main()
 {
   uWS::Hub h;
@@ -139,6 +162,22 @@ int main()
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+
+          cout << "RMSE: " << RMSE(0) << "," << RMSE(1) << "," << RMSE(2) << "," << RMSE(3) << "," << endl;
+          samples++;
+          avgRMSEx += RMSE(0);
+          avgRMSExy += RMSE(1);
+          avgRMSEvx += RMSE(2);
+          avgRMSEvy += RMSE(3);
+          
+          cout << "AVG RMSE: " 
+            << (avgRMSEx / samples) << "," 
+            << (avgRMSExy / samples) << "," 
+            << (avgRMSEvx / samples) << "," 
+            << (avgRMSEvy / samples) << "," << endl;
+
+          IsNewMax(maxRMSvalues, RMSE(0),RMSE(1),RMSE(2),RMSE(3));
+          cout << "MAX RMSE: " << maxRMSvalues << endl;
 	  
         }
       } else {
