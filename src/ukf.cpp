@@ -107,16 +107,30 @@ void UKF::Initialize(MeasurementPackage measurement_pack)
   time_us_ = measurement_pack.timestamp_;
   
   VectorXd p_raw = measurement_pack.raw_measurements_;
-  x_ << 0.3, 0.1, 4, 0.01, 0.0;
+  x_.fill(0.0);
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) 
   {
-    float rho = p_raw(0);
-    float theta = p_raw(1);
-    //float rho_dot = p_raw(2);
 
-    x_(0) = rho * cos(theta);
-    x_(1) = rho * sin(theta);
+    float rho = p_raw(0);
+    float phi = p_raw(1);
+    float rho_dot = p_raw(2);
+
+    float vx = rho_dot * cos(phi);
+    float vy = rho_dot * sin(phi);
+    float v_state = sqrt(vx*vx + vy*vy);
+    float si = atan2(vx, vy);
+    float si_dot = 0.0;
+
+    x_(0) = rho * cos(phi);
+    x_(1) = rho * sin(phi);
+    x_(2) = v_state;
+    x_(3) = si;
+    x_(4) = si_dot;
+
+
+    std::cout << "x,y" << x_(0) << "," << x_(1);
+
   }
   else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) 
   {
