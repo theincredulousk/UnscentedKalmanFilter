@@ -303,7 +303,7 @@ void UKF::Prediction(double delta_t) {
 
 /**
  * Updates the state and the state covariance matrix using a laser measurement.
- * @param {MeasurementPackage} meas_package
+ * @param {MeasurementPackage} meas_package ..
  */
 void UKF::UpdateLidar(MeasurementPackage meas_package) {
   const int n_z = 2; // lidar has x, y
